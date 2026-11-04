@@ -47,3 +47,16 @@ class AnalysisResponse(BaseModel):
     gaps: List[GapResult]
     word_cloud: List[WordFrequency]
     papers: List[Paper]
+
+class SearchPaperItem(BaseModel):
+    id: str
+    title: str
+    publication_year: Optional[int] = None
+    authors: str
+    journal_name: str
+    url: str
+
+class SearchResponse(BaseModel):
+    query: str
+    total_results: int
+    papers: List[SearchPaperItem]

@@ -116,3 +116,68 @@ class OpenAlexClient:
         for word, positions in inverted_index.items():
             for pos in positions: words[pos] = word
         return " ".join(words).strip()
+
+    # --- TAMBAHKAN DI BAWAH FILE ---
+
+def search_papers(query: str, max_results: int = 500) -> list:
+    """
+    Mencari paper berdasarkan keyword/topik di OpenAlex hingga max_results.
+    """
+    import requests
+    
+    base_url = "https://api.openalex.org/works"
+    papers = []
+    page = 1
+    per_page = 200 # Batas maksimal per request OpenAlex
+    
+    while len(papers) < max_results:
+        params = {
+            "search": query,
+            "per-page": per_page,
+            "page": page,
+            "select": "id,title,publication_year,authorships,primary_location"
+        }
+        
+        try:
+            response = requests.get(base_url, params=params)
+            response.raise_for_status()
+            data = response.json()
+            
+            results = data.get("results", [])
+            if not results:
+                break # Berhenti jika tidak ada hasil lagi
+                
+            for item in results:
+                if len(papers) >= max_results:
+                    break
+                    
+                # Ekstrak daftar penulis menjadi string
+                authors_list = [auth.get("author", {}).get("display_name", "") for auth in item.get("authorships", [])]
+                authors_str = ", ".join(filter(None, authors_list))
+                
+                # Ekstrak nama jurnal & URL
+                location = item.get("primary_location") or {}
+                source = location.get("source") or {}
+                journal_name = source.get("display_name") or "Unknown Journal"
+                url = location.get("landing_page_url") or item.get("id")
+                
+                papers.append({
+                    "id": item.get("id", ""),
+                    "title": item.get("title") or "Untitled",
+                    "publication_year": item.get("publication_year"),
+                    "authors": authors_str or "Unknown Author",
+                    "journal_name": journal_name,
+                    "url": url or ""
+                })
+                
+            # Jika hasil yang didapat kurang dari per_page, berarti sudah halaman terakhir
+            if len(results) < per_page:
+                break
+                
+            page += 1
+            
+        except Exception as e:
+            print(f"Error fetching page {page} from OpenAlex: {e}")
+            break
+            
+    return papers

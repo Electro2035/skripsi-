@@ -5,7 +5,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from services.openalex import OpenAlexClient
 from core.nlp import ResearchAnalyzer
-from models.schemas import AnalysisResponse, Overview, TimelineYear
+
+# Gabungkan import skema di sini:
+from models.schemas import AnalysisResponse, Overview, TimelineYear, SearchResponse, SearchPaperItem
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -64,6 +66,40 @@ def analyze_topic(
         logger.error(f"Analysis failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
+# --- TAMBAHKAN DI BAWAH ROUTE YANG SUDAH ADA ---
+
+# Pastikan class dari schemas dan fungsi dari openalex di-import di bagian atas file Anda:
+
+
+@app.get("/api/search", response_model=SearchResponse)
+async def search_journals(q: str):
+    """
+    Endpoint untuk mencari jurnal berdasarkan keyword/topik (maksimal 500 paper).
+    """
+    if not q:
+        return {"query": q, "total_results": 0, "papers": []}
+        
+    # Memanggil fungsi dari openalex.py
+    from services.openalex import search_papers
+    raw_papers = search_papers(query=q, max_results=500)
+    
+    return {
+        "query": q,
+        "total_results": len(raw_papers),
+        "papers": raw_papers
+    }
+
+# --- PLACEHOLDER ENDPOINT BOOKMARK (Persiapan Login) ---
+@app.post("/api/bookmarks")
+async def save_bookmark(paper_id: str):
+    # Sementara hanya mengembalikan pesan sukses
+    return {"status": "success", "message": f"Paper {paper_id} saved (dummy)"}
+
+@app.get("/api/bookmarks/{user_id}")
+async def get_bookmarks(user_id: str):
+    # Sementara mengembalikan list kosong
+    return {"status": "success", "user_id": user_id, "saved_papers": []}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=2000, reload=True)

@@ -52,3 +52,20 @@ export interface AnalysisResponse {
   word_cloud: WordFrequency[];
   papers: Paper[];
 }
+
+// --- TAMBAHKAN DI BAGIAN BAWAH FILE ---
+
+export interface SearchPaperItem {
+  id: string;
+  title: string;
+  publication_year: number | null;
+  authors: string;
+  journal_name: string;
+  url: string;
+}
+
+export interface SearchResponse {
+  query: string;
+  total_results: number;
+  papers: SearchPaperItem[];
+}

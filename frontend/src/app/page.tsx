@@ -102,7 +102,7 @@ export default function Home() {
     setLoading(true); setError(null); setResults(null); setSelectedGap(null);
 
     try {
-      let url = `http://localhost:8000/api/analyze?topic=${encodeURIComponent(query)}&limit=200`;
+      let url = `http://localhost:2000/api/analyze?topic=${encodeURIComponent(query)}&limit=200`;
       if (startYear) url += `&start_year=${startYear}`;
       if (endYear) url += `&end_year=${endYear}`;
 
@@ -199,7 +199,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Left: Native D3 Word Cloud */}
-            <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-[600px]">
+            <section className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-150">
               <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                 <div>
                   <h2 className="text-base font-semibold text-gray-900">Dominant Research Concepts</h2>
@@ -222,7 +222,7 @@ export default function Home() {
             </section>
 
             {/* Right: Gap Indicators */}
-            <section className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col h-[600px]">
+            <section className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col h-150">
               <div className="p-5 border-b border-gray-100 bg-gray-50/50">
                 <h2 className="text-base font-semibold text-gray-900">Research Gap Indicators</h2>
                 <p className="text-xs text-gray-500 mt-0.5">Semantic similarity signals based on abstracts</p>
@@ -270,7 +270,7 @@ export default function Home() {
                               
                               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                                 <span className="text-gray-500">{fullPaper.publication_year || 'Unknown Year'}</span>
-                                {fullPaper.venue && <span className="text-gray-500 truncate max-w-[120px]" title={fullPaper.venue}>• {fullPaper.venue}</span>}
+                                {fullPaper.venue && <span className="text-gray-500 truncate max-w-30" title={fullPaper.venue}>• {fullPaper.venue}</span>}
                                 {fullPaper.is_oa && <span className="text-green-600 font-medium bg-green-50 px-1.5 rounded">Open Access</span>}
                                 <span className="text-gray-500">• {fullPaper.citation_count} Citations</span>
                               </div>
